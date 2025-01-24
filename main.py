@@ -27,6 +27,30 @@ async def chass_status(interaction: discord.Interaction):
 
 web_resource_categories = ["Academics", "Language learning", "Programming", "References", "Game dev", "Business", "General"]
 
+@bot.tree.command(name="add_web_resource_category", description="Add new category")
+@app_commands.describe(
+        category_name="Name of new category"
+        )
+async def add_web_resource_category(
+        interaction: discord.Interaction,
+        category_name: str,
+        ):
+    web_resource_categories.append(category_name)
+    await interaction.response.send_message("Category added", ephemeral=True)
+
+@bot.tree.command(name="remove_web_resource_category", description="Add new category")
+@app_commands.describe(
+        category_name="Name of category to remove"
+        )
+@app_commands.choices(category_name=[app_commands.Choice(name=category, value=category) for category in web_resource_categories])
+async def remove_web_resource_category(
+        interaction: discord.Interaction,
+        category_name: str,
+        ):
+    web_resource_categories.pop(web_resource_categories.index(category_name))
+    await interaction.response.send_message("Category removed", ephemeral=True)
+
+
 @bot.tree.command(name="web_resource", description="Add a web resource")
 @app_commands.describe(
     name="Resource name",
