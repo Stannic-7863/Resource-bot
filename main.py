@@ -8,7 +8,6 @@ from flask import Flask
 from threading import Thread
 
 
-# Add this at the top (after imports)
 app = Flask(__name__)
 @app.route('/')
 def health_check():
@@ -17,19 +16,15 @@ def health_check():
 def run_web_server():
     app.run(host='0.0.0.0', port=8080)
 
-# Load token from .env file
 load_dotenv()
 bot_token = str(os.getenv("DISCORD_TOKEN"))
 
-# Set up bot with all intents
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="/", intents=intents)
 
-# Initialize categories
 web_resource_categories = ["Academics", "Language learning", "Programming", 
                           "References", "Game dev", "Business", "General"]
 
-# Autocomplete functions
 async def category_autocomplete(
     interaction: discord.Interaction,
     current: str
@@ -41,10 +36,9 @@ async def category_autocomplete(
         if current.lower() in category.lower()
     ]
 
-# Bot events
 @bot.event
 async def on_ready():
-    Thread(target=run_web_server).start()  # <-- Add this line
+    Thread(target=run_web_server).start() 
     print(f"{bot.user} has connected to Discord")
     try:
         await bot.tree.sync()
@@ -105,7 +99,7 @@ async def web_resource(
     description: str = "None",
 ):
     """Add a new web resource"""
-    # Server-side validation
+
     if category not in web_resource_categories:
         await interaction.response.send_message("Invalid category!", ephemeral=True)
         return
@@ -114,7 +108,7 @@ async def web_resource(
         await interaction.response.send_message("Command not valid in DMs", ephemeral=True)
         return
 
-    # Format response
+
     formatted_tags = "  ".join(f"`{tag.strip()}`" for tag in tags.split(",") if tag.strip())
     formatted_links = "  ".join(f"<{link.strip()}>" for link in source_links.split(","))
 
@@ -126,14 +120,14 @@ async def web_resource(
         f"**Author:** {interaction.user.mention}"
     )
 
-    # Channel management
+
     resource_channel_name = "useful-web-resources"
     resource_channel = discord.utils.get(interaction.guild.text_channels, name=resource_channel_name)
 
     if not resource_channel:
         resource_channel = await interaction.guild.create_text_channel(resource_channel_name)
 
-    # Thread management
+
     thread = discord.utils.get(resource_channel.threads, name=category)
     
     if not thread:
