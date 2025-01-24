@@ -4,6 +4,18 @@ from discord.ext import commands
 from discord import app_commands
 from dotenv import load_dotenv
 from typing import List
+from flask import Flask
+from threading import Thread
+
+
+# Add this at the top (after imports)
+app = Flask(__name__)
+@app.route('/')
+def health_check():
+    return "Bot is running", 200
+
+def run_web_server():
+    app.run(host='0.0.0.0', port=8080)
 
 # Load token from .env file
 load_dotenv()
@@ -32,6 +44,7 @@ async def category_autocomplete(
 # Bot events
 @bot.event
 async def on_ready():
+    Thread(target=run_web_server).start()  # <-- Add this line
     print(f"{bot.user} has connected to Discord")
     try:
         await bot.tree.sync()
