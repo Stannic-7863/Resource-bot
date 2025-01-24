@@ -1,2 +1,2 @@
 discord==2.3.2
-load_dotenv==1.0.1
+load_dotenv==0.1.0
